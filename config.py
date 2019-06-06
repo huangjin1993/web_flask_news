@@ -2,6 +2,7 @@ from redis import StrictRedis
 
 
 class Config(object):
+    SECRET_KEY = 'ABCD'
     DEBUG = True
 
     SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/flask_news"
@@ -15,3 +16,26 @@ class Config(object):
     SESSION_USER_SIGNER = True
     SESSION_PERMANENT = False
     PERMANENT_LIFETIME = 86400 * 2
+
+
+# 使用面向对象的继承，继承Config，不同环境创建不同的配置
+
+
+class DevelopConfig(Config):
+    DEBUG = True
+
+
+class ProductConfig(Config):
+    DEBUG = False
+
+
+class TestingConfig(Config):
+    DEBUG = True
+
+
+# 使用字典封装每个类
+config = {
+    "develop": DevelopConfig,
+    "product": ProductConfig,
+    "testing": TestingConfig
+    }
