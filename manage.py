@@ -7,8 +7,9 @@
 6.集成flask_script
 7.集成flask_migrate
 """
+import logging
 
-
+from flask import current_app
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from info import create_app, db
@@ -23,6 +24,14 @@ manager.add_command("db",MigrateCommand)
 
 @app.route("/")
 def index():
+    logging.debug("debug")
+    logging.error("error")
+    logging.warning("warning")
+    logging.info("info")
+    logging.fatal("fatal")
+
+    current_app.logger.debug("我是flask中的debug哈哈")
+
     return "index"
 
 
