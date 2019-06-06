@@ -7,7 +7,7 @@ from redis import StrictRedis
 from flask_wtf import CSRFProtect
 from flask_session import Session
 from config import config
-
+from info.modules.index import index_blu
 
 db = SQLAlchemy()
 
@@ -38,5 +38,8 @@ def create_app(config_name):
     CSRFProtect(app)
     # 5.集成flask_session
     Session(app)
+
+    # 注册蓝图
+    app.register_blueprint(index_blu)
 
     return app
