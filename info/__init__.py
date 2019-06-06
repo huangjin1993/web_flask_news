@@ -7,9 +7,10 @@ from redis import StrictRedis
 from flask_wtf import CSRFProtect
 from flask_session import Session
 from config import config
-from info.modules.index import index_blu
+
 
 db = SQLAlchemy()
+
 
 def set_log(config_name):
     # 设置日志的记录等级
@@ -24,6 +25,9 @@ def set_log(config_name):
     logging.getLogger().addHandler(file_log_handler)
 
 
+redis_store = None # type: StrictRedis
+
+
 def create_app(config_name):
     set_log(config_name)
 
@@ -33,6 +37,7 @@ def create_app(config_name):
     # 2.集成sqlalchemy
     db.init_app(app)
     # 3.集成redis
+    global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST,port=config[config_name].REDIS_PORT)
     # 4.SCRFProtect,用来以后设置校验值
     CSRFProtect(app)
@@ -40,6 +45,8 @@ def create_app(config_name):
     Session(app)
 
     # 注册蓝图
+    # 解决循环导入的问题,就是什么时候注册,是么时候导入
+    from info.modules.index import index_blu
     app.register_blueprint(index_blu)
 
     return app
