@@ -17,4 +17,4 @@ def favicon():
     # 2.
     return current_app.send_static_file("news/favicon.ico")
     # 3.实现不了,方法估计有问题
-    # return send_file("news/favicon.ico")
+    # return send_file("/static/news/favicon.ico")
