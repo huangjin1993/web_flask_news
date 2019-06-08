@@ -17,6 +17,8 @@ from info.utils.response_code import RET
 
 @passport_blu.route("/sms_code",methods=["POST"])
 def get_sms_code():
+
+    return jsonify(errno=RET.OK,errmsg="OK")
     # 1.接受的参数摸moble image_code, image_code_id
     dict_data = request.data
     mobile = dict_data.get("mobile")
@@ -31,7 +33,7 @@ def get_sms_code():
         return jsonify(errno=RET.PARAMERR,errmsg="手机号格式不正确")
     # 3.校验用户输入的验证码 和通过image_code_id查出来的验证码是否一致
     try:
-        real_image_code = redis_store.get("ImageCodeId" + image_code_id)
+        real_image_code = redis_store.get("ImageCodeId_" + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR,errmsg="数据库查询失败")
@@ -48,7 +50,7 @@ def get_sms_code():
         return jsonify(errno=RET.THIRDERR, errmsg="短信验证码发送失败")
     # 6.将验证码保存到redis
     try:
-        redis_store.setex("SMS_" + mobile, constants.SMS_CODE_REDIS_EXPIRES)
+        redis_store.setex("SMS_" + mobile, sms_code_str)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="手机验证码保存失败")
@@ -68,7 +70,7 @@ def get_image_code():
     current_app.logger.info("图片验证码为%s" % text)
     # 4.把生成的随机字符串以key value形式保存到redis
     try:
-        redis_store.setex("ImageCodeId" + image_code_id, constants.IMAGE_CODE_REDIS_EXPIRES, text)
+        redis_store.setex("ImageCodeId_" + image_code_id, constants.IMAGE_CODE_REDIS_EXPIRES, text)
     except Exception as e:
         current_app.logger.error(e)
         abort(500)

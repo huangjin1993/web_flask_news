@@ -40,7 +40,7 @@ def create_app(config_name):
     global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST,port=config[config_name].REDIS_PORT)
     # 4.SCRFProtect,用来以后设置校验值
-    CSRFProtect(app)
+    # CSRFProtect(app)
     # 5.集成flask_session
     Session(app)
 
