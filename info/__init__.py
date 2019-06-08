@@ -38,7 +38,7 @@ def create_app(config_name):
     db.init_app(app)
     # 3.集成redis
     global redis_store
-    redis_store = StrictRedis(host=config[config_name].REDIS_HOST,port=config[config_name].REDIS_PORT)
+    redis_store = StrictRedis(host=config[config_name].REDIS_HOST,port=config[config_name].REDIS_PORT,decode_responses=True)
     # 4.SCRFProtect,用来以后设置校验值
     # CSRFProtect(app)
     # 5.集成flask_session

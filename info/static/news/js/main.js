@@ -195,6 +195,7 @@ function sendSMSCode() {
                     if (num == 1){
                         // 倒计时结束
                         clearInterval(t)
+                        t = null
                         $(".get_code").attr("onclick","sendSMSCode();");
                         $(".get_code").html("点击获取验证码")
                     }else{
@@ -204,7 +205,8 @@ function sendSMSCode() {
                 },1000)
             }else{
                 alert(response.errmsg)
-                $("#register-image-code-err").html(response.errmsg)
+                $("#register-image-code-err").html(response.errmsg);
+                $("#register-image-code-err").show()
                 $(".get_code").attr("onclick","sendSMSCode();");
             }
         }
