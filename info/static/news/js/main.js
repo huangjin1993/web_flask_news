@@ -120,6 +120,24 @@ $(function(){
         }
 
         // 发起登录请求
+        var params = {
+            "mobile": mobile,
+            "passport": password
+        }
+        $.ajax({
+            url: "/passport/login",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if (resp.errno == '0'){
+                    // 请成功
+                    location.reload()
+                }else{
+                    alert(resp.errmsg)
+                }
+            }
+        })
     })
 
 
