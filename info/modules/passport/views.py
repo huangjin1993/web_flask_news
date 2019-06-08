@@ -1,5 +1,6 @@
 import random
 import re
+from datetime import datetime
 
 from flask import request, abort, current_app, make_response, jsonify, session
 from info import redis_store, constants, db
@@ -8,6 +9,50 @@ from info.models import User
 from info.modules.passport import passport_blu
 from info.utils.captcha.captcha import captcha
 from info.utils.response_code import RET
+
+
+@passport_blu.route("/login",methods=["POST"])
+def login():
+    """
+    1.接受参数
+    2.校验参数,手机号格式是否正确
+    3.保持用户登录状态
+    4.设置用户登录时间
+    5.返回响应
+    :return:
+    """
+    dict_data = request.json
+    mobile = dict_data.get("mobile")
+    passport = dict_data.get("passport")
+
+    if not all([mobile,passport]):
+        return jsonify(errno=RET.PARAMERR,errmsg="参数错误")
+
+    if not re.match(r"1[35678]\d{9}", mobile):
+        return jsonify(errno=RET.PARAMERR,errmsg="手机号格式不正确")
+
+    try:
+        user = User.query.filter_by(mobile=mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="数据库查询错误")
+    if not user:
+        return jsonify(errno=RET.NODATA,errmsg="用户未注册")
+
+    if not user.check_passowrd(passport):
+        return jsonify(errno=RET.DATAERR,errmsg="密码错误")
+
+    user.last_login = datetime.now()
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="数据保存失败")
+
+    session["user_id"] = user.id
+    return jsonify(errno=RET.OK,errrmsg="登录成功")
 
 
 @passport_blu.route("/register",methods=["POST"])
@@ -63,7 +108,6 @@ def register():
     # 设置用户登录状态
     session["user_id"] = user.id
     return jsonify(errno=RET.OK, errmsg="注册成功")
-
 
 
 # 1.请求的URL是什么
