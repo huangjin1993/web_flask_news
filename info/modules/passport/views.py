@@ -65,7 +65,7 @@ def get_image_code():
         abort(404)
     # 3.生成验证码
     _, text, image = captcha.generate_captcha()
-    current_app.logger.info("图片验证码为%s") % text
+    current_app.logger.info("图片验证码为%s" % text)
     # 4.把生成的随机字符串以key value形式保存到redis
     try:
         redis_store.setex("ImageCodeId" + image_code_id, constants.IMAGE_CODE_REDIS_EXPIRES, text)
