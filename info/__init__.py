@@ -3,11 +3,12 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import generate_csrf
 from redis import StrictRedis
 from flask_wtf import CSRFProtect
 from flask_session import Session
 from config import config
-
+from info.utils.common import do_index_class
 
 db = SQLAlchemy()
 
@@ -39,10 +40,18 @@ def create_app(config_name):
     # 3.集成redis
     global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST,port=config[config_name].REDIS_PORT,decode_responses=True)
+
     # 4.SCRFProtect,用来以后设置校验值
-    # CSRFProtect(app)
+    @app.after_request
+    def after_request(response):
+        csrf_token = generate_csrf()
+        response.set_cookie("csrf_token",csrf_token)
+        return response
+    CSRFProtect(app)
     # 5.集成flask_session
     Session(app)
+
+    app.add_template_filter(do_index_class,"index_class")
 
     # 注册蓝图
     # 解决循环导入的问题,就是什么时候注册,是么时候导入

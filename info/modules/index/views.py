@@ -1,7 +1,7 @@
 from flask import render_template, send_file, redirect, current_app, session
 
-from info import redis_store
-from info.models import User
+from info import redis_store, constants
+from info.models import User, News
 from info.modules.index import index_blu
 
 
@@ -19,8 +19,20 @@ def index():
             user = User.query.get(user_id)
         except Exception as e:
             current_app.logger.error(e)
+
+    # 显示新闻排行
+    try:
+        clicks_news = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS).all()
+    except Exception as e:
+        current_app.logger.error(e)
+    clicks_news_li = [news_obj.to_basic_dict() for news_obj in clicks_news]
+
+
+
+
     data = {
-        "user_info": user.to_dict() if user else None
+        "user_info": user.to_dict() if user else None,
+        "clicks_news_li": clicks_news_li
     }
 
     return render_template("news/index.html",data = data)
