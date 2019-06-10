@@ -57,7 +57,11 @@ def create_app(config_name):
     # 解决循环导入的问题,就是什么时候注册,是么时候导入
     from info.modules.index import index_blu
     app.register_blueprint(index_blu)
+
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+
+    from  info.modules.news import news_blu
+    app.register_blueprint(news_blu)
 
     return app
