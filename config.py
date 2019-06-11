@@ -16,14 +16,15 @@ class Config(object):
     SESSION_TYPE = "redis"
     SESSION_REDIS = StrictRedis(host=REDIS_HOST,port=REDIS_PORT)
     SESSION_USER_SIGNER = True
-    
+
     SESSION_PERMANENT = False
     PERMANENT_LIFETIME = 86400 * 2
 
+    # 设置数据库的默认提交
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+
 
 # 使用面向对象的继承，继承Config，不同环境创建不同的配置
-
-
 class DevelopConfig(Config):
     DEBUG = True
     LOG_LEVEL = logging.DEBUG

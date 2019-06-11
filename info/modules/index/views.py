@@ -1,8 +1,9 @@
-from flask import render_template, send_file, redirect, current_app, session, request, jsonify
+from flask import render_template, send_file, redirect, current_app, session, request, jsonify, g
 
 from info import redis_store, constants
 from info.models import User, News, Category
 from info.modules.index import index_blu
+from info.utils.common import user_login
 from info.utils.response_code import RET
 
 
@@ -45,19 +46,14 @@ def get_news_list():
 
 
 @index_blu.route("/")
+@user_login
 def index():
     """
     需求:首页右上角实现
     当进入到首页,判断是否登录,如果登录,将用户的信息查出来渲染index.html
     :return:
     """
-    user_id = session.get("user_id")
-    user = None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
+    user = g.user
     # 显示新闻排行
     try:
         clicks_news = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS).all()
