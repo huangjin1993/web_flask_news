@@ -2,7 +2,7 @@
 1.集成配置类
 2.集成sqlalchemy
 3.集成redis，测试redis是否能写入
-4.集成CSRFProtect
+# 4.集成CSRFProtect
 5.session保存到redis的配置
 6.集成flask_script
 7.集成flask_migrate
